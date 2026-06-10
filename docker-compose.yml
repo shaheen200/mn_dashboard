@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: razan_web_container
+    container_name: mn_dashboard_web_container
     ports:
       - "8089:80"
     restart: always
