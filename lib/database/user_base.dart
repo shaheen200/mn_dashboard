@@ -24,11 +24,12 @@ class UsersBase {
         }),
       );
       final data = jsonDecode(response.body);
+      print(data);
 
       return ApiData(
         success: data["success"],
         msg: data["message"],
-        data: data['data']['id'] ?? 0,
+        data: data['data'] != null ? data['data']['id'] ?? 0 : 0,
       );
     } catch (e) {
       return ApiData(success: false, msg: "$e", data: 0);
