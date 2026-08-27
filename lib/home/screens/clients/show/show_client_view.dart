@@ -68,14 +68,6 @@ class _ShowClientViewState extends State<ShowClientView> {
                 size: 16,
               ),
             ),
-            CustomBodyTableItems(
-              flex: 2,
-              widget: TEXT(
-                text: "${widget.controller.items[index].salary}",
-                bold: true,
-                size: 16,
-              ),
-            ),
 
             CustomBodyTableItems(
               flex: 1,

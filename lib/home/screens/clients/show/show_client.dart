@@ -86,7 +86,6 @@ class _ShowClientState extends State<ShowClient> {
                   CustomHeadTableItems(flex: 2, text: getText('phone')),
                   CustomHeadTableItems(flex: 2, text: getText('address')),
                   CustomHeadTableItems(flex: 2, text: getText('date')),
-                  CustomHeadTableItems(flex: 2, text: getText('salary')),
                   CustomHeadTableItems(flex: 1, text: getText('more')),
                 ],
               ),
