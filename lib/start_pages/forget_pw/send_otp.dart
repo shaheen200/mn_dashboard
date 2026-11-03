@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mn1/methods/empty_value.dart';
-import 'package:mn1/methods/page_size.dart';
 import 'package:mn1/provider/language/get_text.dart';
 import 'package:mn1/start_pages/forget_pw/verift_otp.dart';
 import 'package:mn1/tools/container/custom_container.dart';
@@ -17,55 +16,51 @@ class SendOtp extends StatefulWidget {
 }
 
 class _SendOtpState extends State<SendOtp> {
-  final TextEditingController phone = .new();
-  final GlobalKey<FormState> _formKey = .new();
+  final TextEditingController phone = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(getText('forget_pw'))),
       body: Center(
-        child: Form(
-          key: _formKey,
-          child: CustomContainer(
-            width: pageSizeWidth(context, 0.45),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomImage(path: 'image/pw.png', w: 1, h: 0.2),
-                CustomField(
-                  icon: Icons.call,
-                  controller: phone,
-                  hintText: getText('phone'),
-                  labelText: getText('phone'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 450),
+              child: CustomContainer(
+                padding: const EdgeInsets.all(24),
+                radius: 24,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CustomImage(path: 'image/pw.png', w: 0.3, h: 0.18),
+                    const SizedBox(height: 20),
+                    CustomField(
+                      icon: Icons.phone_android_rounded,
+                      controller: phone,
+                      hintText: getText('phone'),
+                      labelText: getText('phone'),
+                      validator: (p0) => val(p0),
+                    ),
+                    const SizedBox(height: 30),
+                    CustomBtn(
+                      height: 52,
+                      raduis: 16,
+                      onClick: () async {
+                        if (_formKey.currentState!.validate()) {
+                          goPage(context, VeriftOtp(phone: phone.text));
+                        }
+                      },
+                      text: getText('accept'),
+                      w: 1,
+                    ),
+                  ],
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                CustomBtn(
-                  onClick: () async {
-                    goPage(context, VeriftOtp(phone: phone.text));
-                    // if (_formKey.currentState!.validate()) {
-                    //   waiting(context: context);
-                    //   ApiData accept = await ForgetPwBase.sendOtp(
-                    //       phone: phone.text, emp: widget.emp);
-                    //   pOP(context);
-                    //   if (accept.success) {
-                    //     goPage(context,
-                    //         VeriftOtp(phone: phone.text));
-                    //   } else {
-                    //     msgDialog(
-                    //         context1: context, state: -1, text: accept.msg);
-                    //   }
-                    // }
-                  },
-                  text: getText('accept'),
-                  w: 1,
-                ),
-              ],
+              ),
             ),
           ),
         ),

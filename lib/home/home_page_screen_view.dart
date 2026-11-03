@@ -13,13 +13,16 @@ class _HomePageScreenViewState extends State<HomePageScreenView> {
   @override
   void initState() {
     widget.controllerHomePage.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.controllerHomePage.currentScreen.screen;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: widget.controllerHomePage.currentScreen.screen,
+    );
   }
 }

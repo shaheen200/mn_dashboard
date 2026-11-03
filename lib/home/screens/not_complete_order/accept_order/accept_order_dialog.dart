@@ -18,39 +18,47 @@ void acceptOrderDialog(
   required ApplicationController<Order> orderController,
   required int indexOrder,
 }) {
-  final TextEditingController note = .new();
-  final GlobalKey<FormState> _formKey = .new();
+  final TextEditingController note = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   customDialog(
     context: context,
-    width: 0.5,
+    width: 0.8,
     child: Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: .center,
-        mainAxisAlignment: .start,
-        mainAxisSize: .min,
-        spacing: 12,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          TEXT(text: getText('note'), size: 20, bold: true),
-          Divider(
-            color: Theme.of(context).primaryColorDark,
-            height: 25,
-            thickness: 2,
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.note_alt_rounded,
+                  color: Theme.of(context).primaryColor,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              TEXT(text: getText('note'), size: 20, bold: true),
+            ],
           ),
-
+          const SizedBox(height: 18),
           CustomField(
             controller: note,
-            icon: Icons.note,
+            icon: Icons.note_rounded,
             hintText: "${getText('note')} ....",
             labelText: getText('note'),
-            validator: (p0) {
-              return val(p0);
-            },
+            validator: (p0) => val(p0),
           ),
         ],
       ),
     ),
-    // ok action
     ok: () async {
       if (_formKey.currentState!.validate()) {
         waiting(context: context);
@@ -59,11 +67,6 @@ void acceptOrderDialog(
           orderId: orderController.items[indexOrder].id,
           status: status,
           listData: controller.items.map((e) {
-            return {'good_id': e.goodId, 'price': e.price, 'count': e.count};
-          }).toList(),
-        );
-        print(
-          controller.items.map((e) {
             return {'good_id': e.goodId, 'price': e.price, 'count': e.count};
           }).toList(),
         );

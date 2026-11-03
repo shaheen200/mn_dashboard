@@ -19,36 +19,55 @@ Future<void> byIdDialog({
   } else {
     customDialog(
       context: context,
-      width: 0.5,
+      width: 0.45,
       child: Column(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          TEXT(text: getText('user_data'), size: 20, bold: true),
-          Divider(
-            color: Theme.of(context).primaryColorDark,
-            height: 25,
-            thickness: 2,
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.badge_rounded,
+                  color: Theme.of(context).primaryColor,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              TEXT(
+                text: getText('user_data'),
+                size: 20,
+                bold: true,
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ],
           ),
-
+          const SizedBox(height: 18),
           CustomField(
             controller: TextEditingController(text: user.data!.name),
             enable: false,
-            icon: Icons.person,
+            icon: Icons.person_outline_rounded,
             hintText: "${getText('name')} ....",
             labelText: getText('name'),
           ),
+          const SizedBox(height: 14),
           CustomField(
             controller: TextEditingController(text: user.data!.phone),
             enable: false,
-            icon: Icons.phone,
+            icon: Icons.phone_android_rounded,
             type: CustomFieldType.number,
             hintText: "${getText('phone')} ....",
             labelText: getText('phone'),
           ),
+          const SizedBox(height: 14),
           CustomField(
             controller: TextEditingController(text: user.data!.address),
             enable: false,
-            icon: Icons.place,
+            icon: Icons.place_outlined,
             hintText: "${getText('address')} ....",
             labelText: getText('address'),
           ),

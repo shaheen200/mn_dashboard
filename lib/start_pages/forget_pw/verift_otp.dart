@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mn1/methods/page_size.dart';
 import 'package:mn1/provider/language/get_text.dart';
 import 'package:mn1/start_pages/forget_pw/new_pw.dart';
 import 'package:mn1/tools/container/custom_container.dart';
@@ -40,63 +39,54 @@ class _VeriftOtpState extends State<VeriftOtp> {
     return Scaffold(
       appBar: AppBar(title: Text(getText('verify_otp'))),
       body: Center(
-        child: CustomContainer(
-          width: pageSizeWidth(context, 0.45),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomImage(path: 'image/logo.png', w: 1, h: 0.2),
-              CustomField(
-                labelText: 'OTP',
-                hintText: 'OTP',
-                type: CustomFieldType.number,
-                icon: Icons.key,
-                onChanged: (p0) {
-                  otp = p0;
-                },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: CustomContainer(
+              padding: const EdgeInsets.all(24),
+              radius: 24,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const CustomImage(path: 'image/logo.png', w: 0.3, h: 0.18),
+                  const SizedBox(height: 20),
+                  CustomField(
+                    labelText: 'OTP',
+                    hintText: 'OTP',
+                    type: CustomFieldType.number,
+                    icon: Icons.key_rounded,
+                    onChanged: (p0) {
+                      otp = p0;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TimerWidget(controller: _controller),
+                  TextButton(
+                    onPressed: () {
+                      _controller.replay();
+                    },
+                    child: TEXT(
+                      color: Theme.of(context).primaryColor,
+                      text: getText('send_again'),
+                      size: 16,
+                      bold: true,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomBtn(
+                    height: 52,
+                    raduis: 16,
+                    onClick: () async {
+                      goPage(context, Newpw(phone: widget.phone));
+                    },
+                    text: getText('accept'),
+                    w: 1,
+                  ),
+                ],
               ),
-              const SizedBox(height: 15),
-              TimerWidget(controller: _controller),
-              TextButton(
-                onPressed: () async {
-                  // waiting(context: context);
-                  // ApiData forget = await ForgetPwBase.reSendOtp(
-                  //   phone: widget.phone,
-                  // );
-                  // pOP(context);
-                  // if (forget.success) {
-                  //   _controller.replay();
-                  // } else {
-                  //   msgDialog(context1: context, state: -1, text: forget.msg);
-                  // }
-                },
-                child: TEXT(
-                  color: Theme.of(context).primaryColor,
-                  text: getText('send_again'),
-                  size: 18,
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-              CustomBtn(
-                onClick: () async {
-                  goPage(context, Newpw(phone: widget.phone));
-                  // waiting(context: context);
-                  // ApiData accept = await ForgetPwBase.verifyOtp(
-                  //     phone: widget.phone, otp: otp);
-                  // pOP(context);
-                  // if (accept.success) {
-                  //   goPage(
-                  //       context, Newpw(phone: widget.phone, emp: widget.emp));
-                  // } else {
-                  //   msgDialog(context1: context, state: -1, text: accept.msg);
-                  // }
-                },
-                text: getText('accept'),
-                w: 1,
-              ),
-            ],
+            ),
           ),
         ),
       ),

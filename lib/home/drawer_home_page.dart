@@ -26,101 +26,185 @@ class _DrawerHomePageState extends State<DrawerHomePage> {
   @override
   void initState() {
     widget.controllerHomePage.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      elevation: 5,
-      // width: pageSizeWidth(context, 0.3),
-      shadowColor: Theme.of(context).shadowColor,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          spacing: 12,
-          children: [
-            const CustomImage(path: "image/logo.png", w: 0.1, h: 0.13),
-            TEXT(text: "${widget.openData.name}", size: 20, bold: true),
-            TEXT(
-              text: widget.openData.role == UserRole.admin
-                  ? getText('admin')
-                  : getText('emp'),
-              size: 17,
-            ),
+    final theme = Theme.of(context);
 
-            Expanded(
-              child: ListView(
-                children: widget.controllerHomePage.screens.map((e) {
-                  return GestureDetector(
-                    onTap: () {
-                      widget.controllerHomePage.change(e.id);
-                    },
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 500),
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: 6,
-                        bottom: 6,
-                      ),
-                      margin: EdgeInsets.all(5),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color:
-                            e.id == widget.controllerHomePage.currentScreen.id
-                            ? Theme.of(context).primaryColor.withOpacity(0.25)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(45),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: .center,
-                        mainAxisAlignment: .start,
-                        spacing: 15,
-                        children: [
-                          Icon(
-                            e.icon,
-                            color:
-                                e.id ==
-                                    widget.controllerHomePage.currentScreen.id
-                                ? Theme.of(context).primaryColor
-                                : Theme.of(context).shadowColor,
+    return Drawer(
+      elevation: 0,
+      backgroundColor: theme.cardColor,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(
+              color: theme.dividerColor.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 10),
+
+              // الترتيب الجديد: صف يضم اللوجو وبجانبه عمود الاسم والوظيفة
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // 1. اللوجو داخل إطار دائري أنيق
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor.withOpacity(0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    width: 70,
+                    height: 70,
+                    child: const CustomImage(
+                      path: "image/logo.png",
+                      w: 1,
+                      h: 1,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // 2. عمود يضم الاسم وتحته الوظيفة
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TEXT(
+                          text: "${widget.openData.name}",
+                          size: 16,
+                          bold: true,
+                          color: theme.primaryColorDark,
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 2,
                           ),
-                          Expanded(
-                            child: AnimatedDefaultTextStyle(
-                              child: Text(e.title),
-                              duration: Duration(milliseconds: 500),
-                              style: TextStyle(
-                                fontSize: 20,
-                                color:
-                                    e.id ==
-                                        widget
-                                            .controllerHomePage
-                                            .currentScreen
-                                            .id
-                                    ? Theme.of(context).primaryColor
-                                    : Theme.of(context).shadowColor,
-                              ),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            widget.openData.role == UserRole.admin
+                                ? getText('admin')
+                                : getText('emp'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "tajawal",
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
-            ),
-            CustomBtn(
-              onClick: () async {
-                await LocalBase.clearOpenData();
-                goToPage2(context, LoginScreen());
-              },
-              text: getText('logout'),
-              w: 1,
-            ),
-          ],
+
+              const SizedBox(height: 20),
+              Divider(color: theme.dividerColor.withOpacity(0.15)),
+              const SizedBox(height: 10),
+
+              // قائمة الشاشات الجانبية بالأنيميشن الموحد
+              Expanded(
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: widget.controllerHomePage.screens.map((e) {
+                    final bool isSelected =
+                        e.id == widget.controllerHomePage.currentScreen.id;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(16),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            widget.controllerHomePage.change(e.id);
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? theme.primaryColor.withOpacity(0.12)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  e.icon,
+                                  size: 22,
+                                  color: isSelected
+                                      ? theme.primaryColor
+                                      : theme.primaryColorDark.withOpacity(0.6),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Text(
+                                    e.title,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? theme.primaryColor
+                                          : theme.primaryColorDark.withOpacity(
+                                              0.8,
+                                            ),
+                                      fontFamily: "tajawal",
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Divider(color: theme.dividerColor.withOpacity(0.15)),
+              const SizedBox(height: 10),
+
+              // زر تسجيل الخروج
+              CustomBtn(
+                height: 48,
+                raduis: 16,
+                btnColor: Colors.redAccent.shade700,
+                onClick: () async {
+                  await LocalBase.clearOpenData();
+                  if (context.mounted) {
+                    goToPage2(context, const LoginScreen());
+                  }
+                },
+                text: getText('logout'),
+                w: 1,
+              ),
+            ],
+          ),
         ),
       ),
     );

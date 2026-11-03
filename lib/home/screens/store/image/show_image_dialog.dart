@@ -24,11 +24,8 @@ void showGoodImageDialog({required BuildContext context, required Good good}) {
           width: pageSizeWidth(context, 0.7),
           height: pageSizeHeight(context, 0.75),
           child: Column(
-            spacing: 10,
             children: [
               Row(
-                spacing: 12,
-                crossAxisAlignment: .center,
                 children: [
                   Expanded(
                     child: TEXT(
@@ -47,11 +44,7 @@ void showGoodImageDialog({required BuildContext context, required Good good}) {
                   ),
                 ],
               ),
-              Divider(
-                color: Theme.of(context).primaryColorDark,
-                height: 25,
-                thickness: 2,
-              ),
+              const SizedBox(height: 12),
               CustomHeadTable(
                 headData: [
                   CustomHeadTableItems(flex: 1, text: getText('num')),
@@ -60,25 +53,30 @@ void showGoodImageDialog({required BuildContext context, required Good good}) {
                   CustomHeadTableItems(flex: 1, text: getText('more')),
                 ],
               ),
+              const SizedBox(height: 12),
               Expanded(
                 child: FutureBuilder(
                   future: StoreBase.getImage(id: good.id),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (!snapshot.data!.success) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError ||
+                        !snapshot.hasData ||
+                        !snapshot.data!.success) {
                       return Center(
                         child: TEXT(
-                          text: snapshot.data!.msg,
-                          size: 20,
+                          text: snapshot.data?.msg ?? "حدث خطأ في تحميل الصور",
+                          size: 18,
                           bold: true,
                           center: true,
                         ),
                       );
                     } else {
                       return ListView.builder(
+                        physics: const BouncingScrollPhysics(),
                         itemCount: snapshot.data!.data.length,
                         itemBuilder: (context, index) {
+                          final imageItem = snapshot.data!.data[index];
                           return CustomBodyTable(
                             bodyData: [
                               CustomBodyTableItems(
@@ -86,58 +84,57 @@ void showGoodImageDialog({required BuildContext context, required Good good}) {
                                 widget: TEXT(
                                   text: "${index + 1}",
                                   bold: true,
-                                  size: 16,
+                                  size: 15,
                                 ),
                               ),
                               CustomBodyTableItems(
                                 flex: 2,
                                 widget: GestureDetector(
                                   onTap: () async {
-                                    if ("${snapshot.data!.data[index].url}"
-                                        .isNotEmpty) {
-                                      final Uri _url = Uri.parse(
-                                        "${snapshot.data!.data[index].url}",
+                                    if ("${imageItem.url}".isNotEmpty) {
+                                      final Uri url = Uri.parse(
+                                        "${imageItem.url}",
                                       );
-                                      await launchUrl(_url);
+                                      await launchUrl(url);
                                     }
                                   },
                                   child: TEXT(
                                     color: Colors.blue,
                                     text: getText('tap_to_view'),
                                     bold: true,
-                                    size: 16,
+                                    size: 15,
                                   ),
                                 ),
                               ),
                               CustomBodyTableItems(
                                 flex: 2,
                                 widget: TEXT(
-                                  text: "${snapshot.data!.data[index].time}",
-                                  bold: true,
-                                  size: 16,
+                                  text: "${imageItem.time}",
+                                  size: 15,
                                 ),
                               ),
-
                               CustomBodyTableItems(
                                 flex: 1,
                                 widget: CustomPop(
                                   items: [
                                     CustomPopItems(
                                       text: getText('by'),
+                                      icon: Icons.visibility_rounded,
                                       onTap: () {
                                         byIdDialog(
                                           context: context,
-                                          id: snapshot.data!.data[index].byId,
+                                          id: imageItem.byId,
                                         );
                                       },
                                     ),
                                     CustomPopItems(
                                       text: getText('delete'),
+                                      icon: Icons.delete_rounded,
                                       onTap: () async {
                                         waiting(context: context);
                                         final delete =
                                             await StoreBase.deleteImage(
-                                              id: snapshot.data!.data[index].id,
+                                              id: imageItem.id,
                                             );
                                         pOP(context);
                                         if (delete.success) {

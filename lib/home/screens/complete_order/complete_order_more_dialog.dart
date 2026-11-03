@@ -13,23 +13,33 @@ void completeOrderMoreDialog(
 }) {
   customDialog(
     context: context,
-    width: 0.7,
+    width: 0.8,
     child: Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .start,
-      mainAxisSize: .min,
-      spacing: 15,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        TEXT(text: getText('create_good'), size: 20, bold: true),
-        Divider(
-          color: Theme.of(context).primaryColorDark,
-          height: 25,
-          thickness: 2,
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.note_alt_rounded,
+                color: Theme.of(context).primaryColor,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            TEXT(text: getText('note'), size: 20, bold: true),
+          ],
         ),
-
+        const SizedBox(height: 18),
         CustomField(
           controller: TextEditingController(text: controller.items[index].note),
-          icon: Icons.note,
+          icon: Icons.note_rounded,
           hintText: "${getText('note')} ....",
           labelText: getText('note'),
           maxLines: 5,

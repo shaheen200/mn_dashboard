@@ -12,16 +12,16 @@ import 'package:mn1/tools/custom_field/custom_field.dart';
 import 'package:mn1/tools/msg_dialog.dart';
 import 'package:mn1/tools/waiting.dart';
 
-void editGoodDialog(
-  BuildContext context, {
+void editGoodDialog({
+  required BuildContext context,
   required ApplicationController<Good> controller,
   required int index,
 }) {
-  final TextEditingController name = .new();
-  final TextEditingController code = .new();
-  final TextEditingController price = .new();
-  final TextEditingController exist = .new();
-  final GlobalKey<FormState> _formKey = .new();
+  final TextEditingController name = TextEditingController();
+  final TextEditingController code = TextEditingController();
+  final TextEditingController price = TextEditingController();
+  final TextEditingController exist = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String departmentId = '';
 
   name.text = controller.items[index].name;
@@ -29,19 +29,23 @@ void editGoodDialog(
   price.text = controller.items[index].price;
   exist.text = controller.items[index].exist;
 
+  final bool isDesktop = MediaQuery.of(context).size.width > 900;
+
   customDialog(
     context: context,
-    width: 0.5,
+    width: 0.8,
     child: FutureBuilder(
       future: DepartmentBase.get(all: false),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (!snapshot.data!.success) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError ||
+            !snapshot.hasData ||
+            !snapshot.data!.success) {
           return Center(
             child: TEXT(
-              text: snapshot.data!.msg,
-              size: 20,
+              text: snapshot.data?.msg ?? "حدث خطأ في تحميل الأقسام",
+              size: 18,
               bold: true,
               center: true,
             ),
@@ -50,74 +54,54 @@ void editGoodDialog(
           return Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: .center,
-              mainAxisAlignment: .start,
-              mainAxisSize: .min,
-              spacing: 15,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                TEXT(text: getText('create_good'), size: 20, bold: true),
-                Divider(
-                  color: Theme.of(context).primaryColorDark,
-                  height: 25,
-                  thickness: 2,
-                ),
-
                 Row(
-                  spacing: 10,
                   children: [
-                    Expanded(
-                      child: CustomField(
-                        controller: name,
-                        icon: Icons.person,
-                        hintText: "${getText('name')} ....",
-                        labelText: getText('name'),
-                        validator: (p0) {
-                          return val(p0);
-                        },
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.edit_rounded,
+                        color: Theme.of(context).primaryColor,
+                        size: 22,
                       ),
                     ),
-                    Expanded(
-                      child: CustomField(
-                        controller: code,
-                        icon: Icons.numbers,
-                        type: CustomFieldType.number,
-                        hintText: "${getText('code')} ....",
-                        labelText: getText('code'),
-                        validator: (p0) {
-                          return val(p0);
-                        },
-                      ),
-                    ),
+                    const SizedBox(width: 12),
+                    TEXT(text: getText('create_good'), size: 20, bold: true),
                   ],
                 ),
-
-                Row(
-                  spacing: 10,
-                  children: [
-                    Expanded(
-                      child: CustomField(
-                        controller: price,
-                        icon: Icons.monetization_on,
-                        hintText: "${getText('price')} ....",
-                        labelText: getText('price'),
-                        validator: (p0) {
-                          return val(p0);
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: CustomField(
-                        controller: exist,
-                        icon: Icons.numbers,
-                        hintText: "${getText('exist')} ....",
-                        labelText: getText('exist'),
-                        validator: (p0) {
-                          return val(p0);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 18),
+                if (isDesktop) ...[
+                  Row(
+                    children: [
+                      Expanded(child: _nameField(name)),
+                      const SizedBox(width: 12),
+                      Expanded(child: _codeField(code)),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(child: _priceField(price)),
+                      const SizedBox(width: 12),
+                      Expanded(child: _existField(exist)),
+                    ],
+                  ),
+                ] else ...[
+                  _nameField(name),
+                  const SizedBox(height: 12),
+                  _codeField(code),
+                  const SizedBox(height: 12),
+                  _priceField(price),
+                  const SizedBox(height: 12),
+                  _existField(exist),
+                ],
+                const SizedBox(height: 12),
                 CustomDropDown(
                   initValue:
                       snapshot.data!.data
@@ -132,9 +116,7 @@ void editGoodDialog(
                       : null,
                   hintText: getText('department'),
                   labelText: getText('department'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
+                  validator: (p0) => val(p0),
                   items: snapshot.data!.data.map((e) {
                     return CustomDropDownItems(
                       text: e.name,
@@ -151,7 +133,6 @@ void editGoodDialog(
         }
       },
     ),
-    // ok action
     ok: () async {
       waiting(context: context);
       final edit = await StoreBase.update(
@@ -160,7 +141,6 @@ void editGoodDialog(
         exist: exist.text,
         price: price.text,
         departmentId: departmentId,
-
         id: controller.items[index].id,
       );
       pOP(context);
@@ -174,3 +154,36 @@ void editGoodDialog(
     },
   );
 }
+
+Widget _nameField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.inventory_2_outlined,
+  hintText: "${getText('name')} ....",
+  labelText: getText('name'),
+  validator: (p0) => val(p0),
+);
+
+Widget _codeField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.qr_code_rounded,
+  type: CustomFieldType.number,
+  hintText: "${getText('code')} ....",
+  labelText: getText('code'),
+  validator: (p0) => val(p0),
+);
+
+Widget _priceField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.monetization_on_outlined,
+  hintText: "${getText('price')} ....",
+  labelText: getText('price'),
+  validator: (p0) => val(p0),
+);
+
+Widget _existField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.format_list_numbered_rounded,
+  hintText: "${getText('exist')} ....",
+  labelText: getText('exist'),
+  validator: (p0) => val(p0),
+);

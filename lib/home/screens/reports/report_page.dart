@@ -170,7 +170,7 @@ class _ReportPageState extends State<ReportPage> {
               ),
               Row(
                 children: [
-                  TEXT(text: 'جدول تفصيلي للطلبات', size: 25, bold: true),
+                  TEXT(text: 'جدول تفصيلي للطلبات', size: 20),
                   Expanded(
                     child: Divider(
                       thickness: 1,
@@ -284,7 +284,7 @@ class _ReportPageState extends State<ReportPage> {
         mainAxisSize: .min,
         spacing: 10,
         children: [
-          TEXT(text: title, size: 22, bold: true, color: Colors.white),
+          TEXT(text: title, size: 19, bold: true, color: Colors.white),
 
           Row(
             crossAxisAlignment: .center,

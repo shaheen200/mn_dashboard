@@ -17,17 +17,30 @@ void addBannerImageDialog(
   PlatformFile? file;
   customDialog(
     context: context,
-    width: 0.3,
+    width: 0.4,
     child: Column(
-      mainAxisSize: .min,
-      crossAxisAlignment: .center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        TEXT(text: getText('add_image'), size: 20, bold: true),
-        Divider(
-          color: Theme.of(context).primaryColorDark,
-          height: 25,
-          thickness: 2,
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.add_photo_alternate_rounded,
+                color: Theme.of(context).primaryColor,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            TEXT(text: getText('add_image'), size: 20, bold: true),
+          ],
         ),
+        const SizedBox(height: 18),
         CustomSelectFile(
           onFileSelected: (p0) {
             file = p0;

@@ -1,68 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:mn1/methods/page_size.dart';
 import 'package:mn1/provider/language/get_text.dart';
-
 import 'package:mn1/tools/container/custom_container.dart';
 import 'package:mn1/tools/custom_btn/customBtn.dart';
 import 'waiting.dart';
 
-customDialog({
+Future<void> customDialog({
   required BuildContext context,
-  required double width,
+  required double width, // عرض الديالوج في الشاشات الكبيرة
   double? height,
   required Widget child,
   void Function()? ok,
 }) async {
-  await showDialog(
-    barrierDismissible: false,
+  final double screenWidth = MediaQuery.of(context).size.width;
+  final bool isDesktop = screenWidth > 900;
+
+  // ضبط العرض تلقائياً ليناسب الموبايل أو الويب
+  final double responsiveWidth = isDesktop ? width : 0.92;
+
+  await showGeneralDialog(
     context: context,
-    builder: (context) {
-      return SimpleDialog(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        children: [
-          CustomContainer(
-            padding: const EdgeInsets.all(20),
-            width: pageSizeWidth(context, width),
-            height: height,
-            child: Column(
-              spacing: 20,
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                child,
-                Row(
+    barrierDismissible: false,
+    barrierLabel: '',
+    barrierColor: Colors.black.withOpacity(0.5),
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return const SizedBox.shrink();
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, childWidget) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutBack,
+      );
+      return ScaleTransition(
+        scale: curvedAnimation,
+        child: FadeTransition(
+          opacity: animation,
+          child: AlertDialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            contentPadding: EdgeInsets.zero,
+            content: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: pageSizeWidth(context, responsiveWidth),
+              ),
+              child: CustomContainer(
+                padding: const EdgeInsets.all(20),
+                width: pageSizeWidth(context, responsiveWidth),
+                height: height,
+                radius: 24,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: CustomBtn(
-                        btnColor: Colors.red,
-                        onClick: () {
-                          pOP(context);
-                        },
-                        text: getText("cancel"),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: child,
                       ),
                     ),
-                    Visibility(
-                      visible: ok == null ? false : true,
-                      child: const SizedBox(width: 10),
-                    ),
-                    Visibility(
-                      visible: ok == null ? false : true,
-                      child: Expanded(
-                        child: CustomBtn(
-                          btnColor: Colors.green,
-                          onClick: ok,
-                          text: getText("ok"),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomBtn(
+                            height: 46,
+                            raduis: 14,
+                            btnColor: Colors.redAccent.shade700,
+                            onClick: () {
+                              pOP(context);
+                            },
+                            text: getText("cancel"),
+                          ),
                         ),
-                      ),
+                        Visibility(
+                          visible: ok != null,
+                          child: const SizedBox(width: 12),
+                        ),
+                        Visibility(
+                          visible: ok != null,
+                          child: Expanded(
+                            child: CustomBtn(
+                              height: 46,
+                              raduis: 14,
+                              btnColor: Colors.teal.shade700,
+                              onClick: ok,
+                              text: getText("ok"),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ],
+        ),
       );
     },
   );

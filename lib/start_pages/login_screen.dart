@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mn1/database/user_base.dart';
 import 'package:mn1/home/home_page.dart';
 import 'package:mn1/methods/empty_value.dart';
-import 'package:mn1/methods/page_size.dart';
 import 'package:mn1/provider/language/get_text.dart';
 import 'package:mn1/start_pages/forget_pw/send_otp.dart';
 import 'package:mn1/tools/container/custom_container.dart';
@@ -22,103 +21,192 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController phone = .new();
-  final TextEditingController pw = .new();
-  final GlobalKey<FormState> formKey = .new();
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController phone = TextEditingController();
+  final TextEditingController pw = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  // @override
-  // void initState() {
-  //   phone.text = '9661030015864';
-  //   pw.text = '123654';
-  //   super.initState();
-  // }
+  late AnimationController _animController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    phone.text = '966557183837';
+    pw.text = '966557183837admin';
+    super.initState();
+
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
+
+    _animController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    phone.dispose();
+    pw.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.of(context).size.width > 900;
+
     return Scaffold(
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Form(
-            key: formKey,
-            child: CustomContainer(
-              padding: const EdgeInsets.only(
-                left: 15,
-                right: 15,
-                bottom: 30,
-                top: 0,
-              ),
-              width: pageSizeWidth(context, 0.4),
-              child: Column(
-                spacing: 15,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 25),
-                  CustomField(
-                    labelText: getText("phone"),
-                    hintText: getText("phone"),
-                    icon: Icons.phone,
-                    controller: phone,
-                    type: CustomFieldType.number,
-                    validator: (p0) {
-                      return val(p0);
-                    },
-                  ),
-                  CustomField(
-                    labelText: getText("pw"),
-                    hintText: getText("pw"),
-                    icon: Icons.lock,
-                    pw: true,
-                    controller: pw,
-                    validator: (p0) {
-                      return val(p0);
-                    },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      goPage(context, SendOtp());
-                    },
-                    child: TEXT(
-                      text: getText('forget_pw'),
-                      size: 18,
-                      bold: true,
-                    ),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.015),
-                  CustomBtn(
-                    height: 55,
-                    raduis: 25,
-                    w: 1,
-                    onClick: () async {
-                      if (formKey.currentState!.validate()) {
-                        waiting(context: context);
-                        final login = await UsersBase.login(
-                          phone: phone.text,
-                          pw: pw.text,
-                        );
-                        pOP(context);
-                        if (login.success) {
-                          goToPage(context, HomePage(id: login.data));
-                        } else {
-                          msgDialog(
-                            context1: context,
-                            state: -1,
-                            text: login.msg,
-                          );
-                        }
-                      }
-                    },
-                    text: getText("login"),
-                  ),
-                ],
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: isDesktop
+                    ? _buildDesktopLayout(context)
+                    : _buildMobileLayout(context),
               ),
             ),
           ),
-          const CustomImage(path: "image/logo.png", w: 0.4, h: 1),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 5,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 460),
+              child: _buildFormContent(context),
+            ),
+          ),
+        ),
+        const SizedBox(width: 40),
+        const Expanded(
+          flex: 5,
+          child: Center(
+            child: CustomImage(path: "image/logo.png", w: 0.35, h: 0.55),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const CustomImage(path: "image/logo.png", w: 0.35, h: 0.22),
+        const SizedBox(height: 24),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 450),
+          child: _buildFormContent(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormContent(BuildContext context) {
+    return CustomContainer(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      radius: 24,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TEXT(
+              text: getText("login"),
+              size: 24,
+              bold: true,
+              color: Theme.of(context).primaryColorDark,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "مرحباً بك مجدداً، يرجى إدخال بيانات حسابك",
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).primaryColorDark.withOpacity(0.6),
+                fontFamily: "tajawal",
+              ),
+            ),
+            const SizedBox(height: 28),
+            CustomField(
+              labelText: getText("phone"),
+              hintText: getText("phone"),
+              icon: Icons.phone_android_rounded,
+              controller: phone,
+              type: CustomFieldType.number,
+              validator: (p0) => val(p0),
+            ),
+            const SizedBox(height: 18),
+            CustomField(
+              labelText: getText("pw"),
+              hintText: getText("pw"),
+              icon: Icons.lock_outline_rounded,
+              pw: true,
+              controller: pw,
+              validator: (p0) => val(p0),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                onPressed: () => goPage(context, const SendOtp()),
+                child: TEXT(
+                  text: getText('forget_pw'),
+                  size: 15,
+                  bold: true,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            CustomBtn(
+              height: 52,
+              raduis: 16,
+              w: 1,
+              onClick: () async {
+                if (formKey.currentState!.validate()) {
+                  waiting(context: context);
+                  final login = await UsersBase.login(
+                    phone: phone.text,
+                    pw: pw.text,
+                  );
+                  pOP(context);
+                  if (login.success) {
+                    goToPage(context, HomePage(id: login.data));
+                  } else {
+                    msgDialog(context1: context, state: -1, text: login.msg);
+                  }
+                }
+              },
+              text: getText("login"),
+            ),
+          ],
+        ),
       ),
     );
   }

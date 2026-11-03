@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:mn1/controller/application_controller.dart';
 import 'package:mn1/database/department_base.dart';
@@ -17,29 +16,44 @@ void addDepartDialog(
   BuildContext context, {
   required ApplicationController<Department> controller,
 }) {
-  final TextEditingController name = .new();
-  final GlobalKey<FormState> _formKey = .new();
+  final TextEditingController name = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Uint8List? bytes;
+
   customDialog(
     context: context,
-    width: 0.5,
+    width: 0.8,
     child: Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: .center,
-        mainAxisAlignment: .start,
-        mainAxisSize: .min,
-        spacing: 12,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          TEXT(text: getText('create_depart'), size: 20, bold: true),
-          Divider(
-            color: Theme.of(context).primaryColorDark,
-            height: 25,
-            thickness: 2,
-          ),
-
           Row(
-            spacing: 10,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.playlist_add_rounded,
+                  color: Theme.of(context).primaryColor,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              TEXT(
+                text: getText('create_depart'),
+                size: 20,
+                bold: true,
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
             children: [
               Expanded(
                 child: CustomField(
@@ -47,11 +61,10 @@ void addDepartDialog(
                   icon: Icons.data_exploration_outlined,
                   hintText: "${getText('name')} ....",
                   labelText: getText('name'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
+                  validator: (p0) => val(p0),
                 ),
               ),
+              const SizedBox(width: 12),
               CustomSelectImage(
                 bytes: (p0) {
                   bytes = p0;
@@ -62,7 +75,6 @@ void addDepartDialog(
         ],
       ),
     ),
-    // ok action
     ok: () async {
       if (_formKey.currentState!.validate()) {
         waiting(context: context);

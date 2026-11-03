@@ -10,99 +10,75 @@ import 'package:mn1/tools/msg_dialog.dart';
 import 'package:mn1/tools/waiting.dart';
 
 void addOfferDialog(BuildContext context, {required Good good}) {
-  final TextEditingController price = .new();
-  final TextEditingController title = .new();
-  final TextEditingController descrip = .new();
-  final TextEditingController fromDate = .new();
-  final TextEditingController toDate = .new();
-  final GlobalKey<FormState> _formKey = .new();
+  final TextEditingController price = TextEditingController();
+  final TextEditingController title = TextEditingController();
+  final TextEditingController descrip = TextEditingController();
+  final TextEditingController fromDate = TextEditingController();
+  final TextEditingController toDate = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final bool isDesktop = MediaQuery.of(context).size.width > 900;
+
   customDialog(
     context: context,
-    width: 0.5,
+    width: 0.8,
     child: Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: .center,
-        mainAxisAlignment: .start,
-        mainAxisSize: .min,
-        spacing: 12,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          TEXT(text: getText('add_offer'), size: 20, bold: true),
-          Divider(
-            color: Theme.of(context).primaryColorDark,
-            height: 25,
-            thickness: 2,
-          ),
-
           Row(
             children: [
-              Expanded(
-                child: CustomField(
-                  controller: title,
-                  icon: Icons.text_fields_rounded,
-                  hintText: "${getText('title')} ....",
-                  labelText: getText('title'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.local_offer_rounded,
+                  color: Theme.of(context).primaryColor,
+                  size: 22,
                 ),
               ),
-              Expanded(
-                child: CustomField(
-                  controller: descrip,
-                  icon: Icons.numbers,
-                  maxLength: 30,
-                  hintText: "${getText('description')} ....",
-                  labelText: getText('description'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
-                ),
-              ),
+              const SizedBox(width: 12),
+              TEXT(text: getText('add_offer'), size: 20, bold: true),
             ],
           ),
-          CustomField(
-            controller: price,
-            icon: Icons.monetization_on,
-            type: CustomFieldType.number,
-            hintText: "${getText('offer_price')} ....",
-            labelText: getText('offer_price'),
-            validator: (p0) {
-              return val(p0);
-            },
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: CustomField(
-                  controller: fromDate,
-                  icon: Icons.date_range,
-                  type: CustomFieldType.date,
-                  hintText: "${getText('from')} ....",
-                  labelText: getText('from'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
-                ),
-              ),
-              Expanded(
-                child: CustomField(
-                  controller: toDate,
-                  icon: Icons.monetization_on,
-                  type: CustomFieldType.date,
-                  hintText: "${getText('to')} ....",
-                  labelText: getText('to'),
-                  validator: (p0) {
-                    return val(p0);
-                  },
-                ),
-              ),
-            ],
-          ),
+          const SizedBox(height: 18),
+          if (isDesktop) ...[
+            Row(
+              children: [
+                Expanded(child: _titleField(title)),
+                const SizedBox(width: 12),
+                Expanded(child: _descripField(descrip)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _priceField(price),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: _fromDateField(fromDate)),
+                const SizedBox(width: 12),
+                Expanded(child: _toDateField(toDate)),
+              ],
+            ),
+          ] else ...[
+            _titleField(title),
+            const SizedBox(height: 12),
+            _descripField(descrip),
+            const SizedBox(height: 12),
+            _priceField(price),
+            const SizedBox(height: 12),
+            _fromDateField(fromDate),
+            const SizedBox(height: 12),
+            _toDateField(toDate),
+          ],
         ],
       ),
     ),
-    // ok action
     ok: () async {
       if (_formKey.currentState!.validate()) {
         waiting(context: context);
@@ -125,3 +101,47 @@ void addOfferDialog(BuildContext context, {required Good good}) {
     },
   );
 }
+
+Widget _titleField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.text_fields_rounded,
+  hintText: "${getText('title')} ....",
+  labelText: getText('title'),
+  validator: (p0) => val(p0),
+);
+
+Widget _descripField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.description_rounded,
+  maxLength: 30,
+  hintText: "${getText('description')} ....",
+  labelText: getText('description'),
+  validator: (p0) => val(p0),
+);
+
+Widget _priceField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.monetization_on_outlined,
+  type: CustomFieldType.number,
+  hintText: "${getText('offer_price')} ....",
+  labelText: getText('offer_price'),
+  validator: (p0) => val(p0),
+);
+
+Widget _fromDateField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.date_range_rounded,
+  type: CustomFieldType.date,
+  hintText: "${getText('from')} ....",
+  labelText: getText('from'),
+  validator: (p0) => val(p0),
+);
+
+Widget _toDateField(TextEditingController c) => CustomField(
+  controller: c,
+  icon: Icons.date_range_rounded,
+  type: CustomFieldType.date,
+  hintText: "${getText('to')} ....",
+  labelText: getText('to'),
+  validator: (p0) => val(p0),
+);

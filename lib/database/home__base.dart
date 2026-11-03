@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mn1/constant/const.dart';
 import 'package:mn1/database/local_base.dart';
 import 'package:mn1/models/api_data.dart';
+import 'package:mn1/models/dashboard_model.dart';
 import 'package:mn1/models/open_data.dart';
 
 class HomeBase {
@@ -29,6 +30,25 @@ class HomeBase {
       );
     } catch (e) {
       return ApiData<OpenData?>(success: false, msg: "$e", data: null);
+    }
+  }
+
+  static Future<ApiData<DashboardModel?>> getDashboardStats() async {
+    try {
+      var response = await http.get(
+        Uri.parse("$domin/home/get_dashboard_data"),
+        headers: {'Content-Type': 'application/json', 'v-app': vApp},
+      );
+      final data = jsonDecode(response.body);
+      return ApiData<DashboardModel?>(
+        success: data["success"],
+        msg: data["message"],
+        data: data["success"] == true
+            ? DashboardModel.fromMap(data["data"])
+            : null,
+      );
+    } catch (e) {
+      return ApiData<DashboardModel?>(success: false, msg: "$e", data: null);
     }
   }
 }

@@ -22,12 +22,14 @@ class CustomHeadTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomContainer(
-      width: double.infinity,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        spacing: 10,
         children: headData.where((element) => element.show).toList().map((e) {
           return Expanded(
             flex: e.flex,
@@ -35,9 +37,10 @@ class CustomHeadTable extends StatelessWidget {
               e.text,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
-                color: e.color ?? Theme.of(context).primaryColorDark,
+                fontSize: 15,
+                color: e.color ?? Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
+                fontFamily: "tajawal",
               ),
             ),
           );
@@ -65,11 +68,11 @@ class CustomBodyTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
-      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      radius: 14,
       child: Row(
-        spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: bodyData.where((element) => element.show).toList().map((e) {
           return Expanded(
             flex: e.flex,

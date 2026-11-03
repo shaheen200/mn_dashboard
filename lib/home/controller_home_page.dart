@@ -15,86 +15,94 @@ import 'package:mn1/provider/language/get_text.dart';
 class ControllerHomePage extends ChangeNotifier {
   List<HomePageScreens> screens = [];
   late HomePageScreens currentScreen;
+
   void init({required OpenData openData}) {
     screens = [
       HomePageScreens(
         show: true,
         id: 0,
-        icon: Icons.people,
+        icon: Icons.dashboard_rounded,
         title: getText('main_screen'),
         screen: MainScreen(),
       ),
       HomePageScreens(
         show: openData.showEmp,
         id: 1,
-        icon: Icons.people,
+        icon: Icons.badge_rounded,
         title: getText('emp'),
         screen: ShowEmpolyee(add: openData.addEmp),
       ),
       HomePageScreens(
         show: openData.showClient,
         id: 2,
-        icon: Icons.people_outline,
+        icon: Icons.people_alt_rounded,
         title: getText('client'),
         screen: ShowClient(add: openData.addClient),
       ),
       HomePageScreens(
         show: openData.showDepart,
         id: 3,
-        icon: Icons.data_exploration_outlined,
+        icon: Icons.account_tree_rounded,
         title: getText('depart'),
         screen: ShowDepart(),
       ),
       HomePageScreens(
         show: openData.showStore,
         id: 4,
-        icon: Icons.store,
+        icon: Icons.storefront_rounded,
         title: getText('store'),
         screen: ShowStore(),
       ),
-
       HomePageScreens(
         show: openData.showOffer,
         id: 5,
-        icon: Icons.local_offer,
+        icon: Icons.local_offer_rounded,
         title: getText('offer'),
         screen: ShowOffers(),
       ),
       HomePageScreens(
         show: openData.showCompleteOrder,
         id: 6,
-        icon: Icons.online_prediction_rounded,
+        icon: Icons.task_alt_rounded,
         title: getText('complete_order'),
         screen: ShowCompleteOrder(),
       ),
       HomePageScreens(
         show: openData.showNotCompleteOrder,
         id: 7,
-        icon: Icons.done_all_outlined,
+        icon: Icons.pending_actions_rounded,
         title: getText('not_complete_order'),
         screen: ShowNotCompleteOrder(),
       ),
       HomePageScreens(
         show: openData.report,
         id: 8,
-        icon: Icons.add_chart,
+        icon: Icons.analytics_rounded,
         title: getText('reports'),
         screen: ReportPage(),
       ),
       HomePageScreens(
         show: openData.role == UserRole.admin,
         id: 9,
-        icon: Icons.image,
+        icon: Icons.image_rounded,
         title: getText('search_banner'),
         screen: ShowSearchBanner(),
       ),
     ];
     screens = screens.where((element) => element.show).toList();
-    currentScreen = screens[0];
+    if (screens.isNotEmpty) {
+      currentScreen = screens[0];
+    }
+    notifyListeners();
   }
 
   void change(int index) {
-    currentScreen = screens[index];
+    // البحث عن الشاشة بالـ id لضمان الدقة بعد الفلترة
+    final selected = screens.firstWhere(
+      (element) => element.id == index,
+      orElse: () => screens[0],
+    );
+    currentScreen = selected;
     notifyListeners();
   }
 }
