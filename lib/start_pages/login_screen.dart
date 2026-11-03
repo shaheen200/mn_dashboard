@@ -33,8 +33,8 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   void initState() {
-    phone.text = '966557183837';
-    pw.text = '966557183837admin';
+    // phone.text = '966557183837';
+    // pw.text = '966557183837admin';
     super.initState();
 
     _animController = AnimationController(
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen>
           flex: 5,
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
+              constraints: const BoxConstraints(maxWidth: 500),
               child: _buildFormContent(context),
             ),
           ),
@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen>
         const CustomImage(path: "image/logo.png", w: 0.35, h: 0.22),
         const SizedBox(height: 24),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 450),
+          constraints: const BoxConstraints(maxWidth: 500),
           child: _buildFormContent(context),
         ),
       ],
